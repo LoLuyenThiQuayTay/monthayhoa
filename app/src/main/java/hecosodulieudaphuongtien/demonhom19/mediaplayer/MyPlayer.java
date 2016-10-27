@@ -42,7 +42,6 @@ public class MyPlayer implements MediaPlayer.OnPreparedListener, View.OnClickLis
         btnForward = (LinearLayout) activity.findViewById(R.id.btn_forward);
         btnPlay = (LinearLayout) activity.findViewById(R.id.btn_play);
         viewPlayer = (RelativeLayout) activity.findViewById(R.id.viewPlayer);
-        layoutTrick = (RelativeLayout) activity.findViewById(R.id.layout_trick);
         viewPlayer.setVisibility(View.GONE);
         btnPlay.setOnClickListener(this);
         btnBackward.setOnClickListener(this);

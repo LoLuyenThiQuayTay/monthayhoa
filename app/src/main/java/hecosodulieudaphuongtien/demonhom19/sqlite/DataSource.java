@@ -35,7 +35,7 @@ public class DataSource {
             Audio audio = new Audio();
             audio.id = cursor.getInt(0);
             audio.title = cursor.getString(1);
-            audio.url=cursor.getString(2);
+            audio.rawUrl=cursor.getString(2);
             audio.number = num;
             num++;
             listAudio.add(audio);
@@ -50,7 +50,7 @@ public class DataSource {
         ContentValues insertValues = new ContentValues();
         insertValues.put("title", audio.title);
         insertValues.put("id", audio.id);
-        insertValues.put("url", audio.url);
+        insertValues.put("url", audio.rawUrl);
         sqLiteDatabase.insert("audio", null, insertValues);
 
     }

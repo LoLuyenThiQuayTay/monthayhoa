@@ -5,17 +5,21 @@ package hecosodulieudaphuongtien.demonhom19.entity;
  */
 public class Audio {
 //    public static String IP = "http://172.20.10.2/";
-    public static String IP = "http://192.168.56.1/";
 
 
     public int id;
+    public int idAudio;
     public String title;
-    public String url;
+    public String rawUrl;
+    public int partCount;
+    public int partPosition;
+    public int idSinger;
+    public float rate;
     public boolean isPlaying = false;
     public int number;
 
     public String getURL() {
-        return IP + url;
+        return Utils.BASE_URL + rawUrl;
     }
 
     ;

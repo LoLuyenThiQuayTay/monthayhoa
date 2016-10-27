@@ -78,6 +78,5 @@ public class DownloadAudio extends AsyncTask<String, String, String> {
         activity.makeNotification("Tải về thành công !");
 
         activity.dismissDialog(activity.DIALOG_DOWNLOAD);
-        activity.downloadComplete();
     }
 }
