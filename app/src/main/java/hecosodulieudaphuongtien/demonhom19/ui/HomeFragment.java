@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.adapter.AudioDownloadedAdapter;
 import hecosodulieudaphuongtien.demonhom19.entity.Audio;
+import hecosodulieudaphuongtien.demonhom19.entity.Singer;
 import hecosodulieudaphuongtien.demonhom19.sqlite.DataSource;
 
 /**
@@ -54,6 +55,15 @@ public class HomeFragment extends Fragment {
                 activity.replaceFragmentUp(new SearchFragment());
             }
         });
+        ArrayList<Audio> listAudio = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            Audio audio = new Audio();
+            audio.title = "Fallin'";
+            audio.singer = new Singer("Alicia Keys");
+            listAudio.add(audio);
+        }
+
+        adapter.updateData(listAudio);
         return rootView;
     }
 

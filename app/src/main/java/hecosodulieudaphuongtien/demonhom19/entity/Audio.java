@@ -13,7 +13,7 @@ public class Audio {
     public String rawUrl;
     public int partCount;
     public int partPosition;
-    public int idSinger;
+    public Singer singer;
     public float rate;
     public boolean isPlaying = false;
     public int number;

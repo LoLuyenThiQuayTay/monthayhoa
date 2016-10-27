@@ -54,6 +54,12 @@ public class AudioDownloadedAdapter extends RecyclerView.Adapter<AudioDownloaded
 
             }
         });
+        holder.tvArtis.setText(audio.singer.name);
+        if (position == getItemCount() - 1) {
+            holder.line.setVisibility(View.GONE);
+        } else {
+            holder.line.setVisibility(View.VISIBLE);
+        }
     }
 
     public ArrayList<Audio> getListData() {
@@ -68,15 +74,17 @@ public class AudioDownloadedAdapter extends RecyclerView.Adapter<AudioDownloaded
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout btnDownload;
-        public TextView tvName, tvNumber;
-        public RelativeLayout item;
+        public TextView tvName, tvNumber, tvArtis;
+        public RelativeLayout item, line;
 
         public ViewHolder(View itemView) {
             super(itemView);
             item = (RelativeLayout) itemView.findViewById(R.id.btn_item);
             tvNumber = (TextView) itemView.findViewById(R.id.tv_number);
+            tvArtis = (TextView) itemView.findViewById(R.id.tv_artis);
             btnDownload = (LinearLayout) itemView.findViewById(R.id.btn_sub_item);
             tvName = (TextView) itemView.findViewById(R.id.tv_title);
+            line = (RelativeLayout) itemView.findViewById(R.id.line);
         }
 
     }
