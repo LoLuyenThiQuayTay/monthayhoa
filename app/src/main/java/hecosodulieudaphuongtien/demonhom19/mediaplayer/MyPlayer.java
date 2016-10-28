@@ -1,38 +1,35 @@
 package hecosodulieudaphuongtien.demonhom19.mediaplayer;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
-import hecosodulieudaphuongtien.demonhom19.entity.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
 import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
 
 /**
  * Created by admin on 3/29/2016.
  */
-public class MyPlayer implements MediaPlayer.OnPreparedListener, View.OnClickListener {
+public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     private MainActivity activity;
-    private MediaPlayer mediaPlayer;
-    int SEEK_TIME = 5000;
 
     private TextView tv_Title;
     private LinearLayout btnPlay, btnForward, btnBackward;
     private ImageView iconPlay;
-    private RelativeLayout viewPlayer, layoutTrick;
+    private RelativeLayout viewPlayer;
+    public static boolean isPlaying = false;
+    public static int partPlaying = 0;
+
+    public static ArrayList<PlayerPart> listPlayer;
 
     public MyPlayer(MainActivity activity) {
         this.activity = activity;
         init();
-        mediaPlayer = new MediaPlayer();
     }
 
     public void init() {
@@ -41,80 +38,64 @@ public class MyPlayer implements MediaPlayer.OnPreparedListener, View.OnClickLis
         btnBackward = (LinearLayout) activity.findViewById(R.id.btn_backward);
         btnForward = (LinearLayout) activity.findViewById(R.id.btn_forward);
         btnPlay = (LinearLayout) activity.findViewById(R.id.btn_play);
-        viewPlayer = (RelativeLayout) activity.findViewById(R.id.viewPlayer);
-        viewPlayer.setVisibility(View.GONE);
+//        viewPlayer = (RelativeLayout) activity.findViewById(R.id.player);
+//        viewPlayer.setVisibility(View.GONE);
         btnPlay.setOnClickListener(this);
         btnBackward.setOnClickListener(this);
         btnForward.setOnClickListener(this);
     }
 
     public void playOnline(Audio audio) {
-        if (viewPlayer.getVisibility() != View.VISIBLE) {
-            viewPlayer.setVisibility(View.VISIBLE);
-            layoutTrick.setVisibility(View.VISIBLE);
-        }
+
+//        if (viewPlayer.getVisibility() != View.VISIBLE) {
+//            viewPlayer.setVisibility(View.VISIBLE);
+//        }
         tv_Title.setText(audio.title);
         iconPlay.setBackgroundResource(R.drawable.pause_circle);
-        mediaPlayer.reset();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(audio.getURL());
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        listPlayer = new ArrayList<>();
+        partPlaying = 0;
+        for (int i = 0; i < audio.listRealUrl.size(); i++) {
+            PlayerPart playerPart = new PlayerPart(audio.getURL(i), i, this);
+            listPlayer.add(playerPart);
         }
-        mediaPlayer.setOnPreparedListener(MyPlayer.this);
-        mediaPlayer.prepareAsync();
+//        listPlayer.get(0).onPrepare();
+
     }
 
-    public void playOffline(Audio audio) {
-        if (viewPlayer.getVisibility() != View.VISIBLE) {
-            viewPlayer.setVisibility(View.VISIBLE);
-            layoutTrick.setVisibility(View.VISIBLE);
-        }
-        tv_Title.setText(audio.title);
+    public void playOffline(String title) {
+
+//        if (viewPlayer.getVisibility() != View.VISIBLE) {
+//            viewPlayer.setVisibility(View.VISIBLE);
+//        }
+        tv_Title.setText(title);
         iconPlay.setBackgroundResource(R.drawable.pause_circle);
-        mediaPlayer.reset();
-        String mediaPath = "sdcard/Music/" + audio.title + ".mp3";
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        Uri uri = Uri.parse(mediaPath);
-        try {
-            mediaPlayer.setDataSource(activity.getApplicationContext(), uri);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        listPlayer = new ArrayList<>();
+        partPlaying = 0;
+        PlayerPart playerPart = new PlayerPart(title, activity, this);
+        listPlayer.add(playerPart);
+
     }
 
     public void seekForward() {
-        int currentPosition = mediaPlayer.getCurrentPosition();
-        if (currentPosition + SEEK_TIME <= mediaPlayer.getDuration()) {
-            mediaPlayer.seekTo(currentPosition + SEEK_TIME);
-        } else mediaPlayer.seekTo(mediaPlayer.getDuration());
+
     }
 
     public void seekBackward() {
-        int currentPosition = mediaPlayer.getCurrentPosition();
-        if (currentPosition - SEEK_TIME >= 0) {
-            mediaPlayer.seekTo(currentPosition - SEEK_TIME);
-        } else mediaPlayer.seekTo(0);
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mediaPlayer.start();
-    }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
             case R.id.btn_play:
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
+                if (isPlaying) {
+                    listPlayer.get(partPlaying).onPause();
                     iconPlay.setBackgroundResource(R.drawable.play_circle);
                 } else {
-                    mediaPlayer.start();
+                    listPlayer.get(partPlaying).onResume();
+
                     iconPlay.setBackgroundResource(R.drawable.pause_circle);
                 }
                 break;
@@ -124,6 +105,14 @@ public class MyPlayer implements MediaPlayer.OnPreparedListener, View.OnClickLis
             case R.id.btn_forward:
                 seekForward();
                 break;
+        }
+    }
+
+
+    @Override
+    public void onCompletedPart(int position) {
+        if (position < listPlayer.size() - 1) {
+            listPlayer.get(position + 1).onResume();
         }
     }
 }

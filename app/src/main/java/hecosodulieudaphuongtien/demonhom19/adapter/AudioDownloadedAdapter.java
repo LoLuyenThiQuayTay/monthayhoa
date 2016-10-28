@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
-import hecosodulieudaphuongtien.demonhom19.entity.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
 
 /**
  * Created by Z170A Gaming M7 on 9/19/2016.
@@ -20,8 +20,10 @@ import hecosodulieudaphuongtien.demonhom19.entity.Audio;
 public class AudioDownloadedAdapter extends RecyclerView.Adapter<AudioDownloadedAdapter.ViewHolder> {
     public ArrayList<Audio> listData;
     public Context context;
+    public OnClickItemRecyclerView listener;
 
-    public AudioDownloadedAdapter(Context context) {
+    public AudioDownloadedAdapter(Context context, OnClickItemRecyclerView listener) {
+        this.listener = listener;
         this.context = context;
         listData = new ArrayList<>();
 
@@ -51,7 +53,7 @@ public class AudioDownloadedAdapter extends RecyclerView.Adapter<AudioDownloaded
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                listener.onClickItem(position);
             }
         });
         holder.tvArtis.setText(audio.singer.name);
@@ -89,5 +91,7 @@ public class AudioDownloadedAdapter extends RecyclerView.Adapter<AudioDownloaded
 
     }
 
-
+    public interface OnClickItemRecyclerView {
+        public void onClickItem(int position);
+    }
 }

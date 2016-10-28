@@ -1,7 +1,6 @@
 package hecosodulieudaphuongtien.demonhom19.ui;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,32 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
-import hecosodulieudaphuongtien.demonhom19.entity.Audio;
-import hecosodulieudaphuongtien.demonhom19.entity.Utils;
-import hecosodulieudaphuongtien.demonhom19.sqlite.DataSource;
-import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.Utils;
 
 /**
  * Created by admin on 3/24/2016.

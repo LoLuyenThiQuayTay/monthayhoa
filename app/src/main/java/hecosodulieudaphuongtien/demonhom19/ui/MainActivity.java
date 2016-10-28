@@ -12,10 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import java.sql.SQLException;
 
 import hecosodulieudaphuongtien.demonhom19.R;
+import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
 import hecosodulieudaphuongtien.demonhom19.sqlite.DataBaseHelper;
 
 public class MainActivity extends AppCompatActivity {
-    //    private MyPlayer myPlayer;
+    private MyPlayer myPlayer;
     public int DIALOG_DOWNLOAD = 1011;
     public ProgressDialog progressDialog;
     public int FRAGMENT_CONTENT = R.id.fragment_content;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        myPlayer = new MyPlayer(this);
+        myPlayer = new MyPlayer(this);
         DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
         dataBaseHelper.createDataBase();
         try {
@@ -62,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(this.getCurrentFocus(), message, Snackbar.LENGTH_SHORT).show();
     }
 
-//    public MyPlayer getPlayerController() {
-//        return myPlayer;
-//    }
+    public MyPlayer getPlayerController() {
+        return myPlayer;
+    }
 
 
     @Override

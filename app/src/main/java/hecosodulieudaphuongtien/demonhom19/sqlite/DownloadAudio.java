@@ -2,7 +2,6 @@ package hecosodulieudaphuongtien.demonhom19.sqlite;
 
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.design.widget.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,7 +11,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import hecosodulieudaphuongtien.demonhom19.entity.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
 import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
 
 /**
@@ -39,7 +38,7 @@ public class DownloadAudio extends AsyncTask<String, String, String> {
         int count;
 
         try {
-            URL url = new URL(audio.getURL());
+            URL url = new URL(audio.getURL(0));
             URLConnection connection = url.openConnection();
             connection.connect();
 

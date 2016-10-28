@@ -5,14 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import hecosodulieudaphuongtien.demonhom19.R;
-import hecosodulieudaphuongtien.demonhom19.entity.Audio;
-import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
 
 /**
  * Created by admin on 3/25/2016.
