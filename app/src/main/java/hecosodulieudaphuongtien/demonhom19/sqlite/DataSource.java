@@ -30,9 +30,9 @@ public class DataSource {
         int num = 1;
         while (!cursor.isAfterLast()) {
             Audio audio = new Audio();
-            audio.id = cursor.getInt(0);
+            audio.idAudio = cursor.getInt(0);
             audio.title = cursor.getString(1);
-            audio.rawUrl=cursor.getString(2);
+            audio.rawUrl = cursor.getString(2);
             audio.number = num;
             num++;
             listAudio.add(audio);
@@ -46,7 +46,7 @@ public class DataSource {
 //        String query = "INSERT INTO audio (id_sever,title) VALUES(" + audio.id + "," + audio.title + ")";
         ContentValues insertValues = new ContentValues();
         insertValues.put("title", audio.title);
-        insertValues.put("id", audio.id);
+        insertValues.put("id", audio.idAudio);
         insertValues.put("url", audio.rawUrl);
         sqLiteDatabase.insert("audio", null, insertValues);
 
@@ -56,7 +56,7 @@ public class DataSource {
 //        Cursor cursor = sqLiteDatabase.rawQuery("DELETE * FROM audio while title =?", new String[]{audio.title});
 //        cursor.moveToFirst();
 //        cursor.close();
-        sqLiteDatabase.delete("audio","title = ?", new String[]{audio.title});
+        sqLiteDatabase.delete("audio", "title = ?", new String[]{audio.title});
         if (checkFileExists(audio)) {
             File file = new File("/sdcard/Music/" + audio.title + ".mp3");
             file.delete();
