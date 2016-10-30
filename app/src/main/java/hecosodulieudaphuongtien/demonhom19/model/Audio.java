@@ -20,7 +20,6 @@ public class Audio {
     public static final String PART_POSITION = "PartPosition";
     public static final String URL = "Url";
     public static final String RATE = "Rate";
-    public static final String RATE = "PartPosition";
     public static final String Length = "Length";
 
     public static final String SINGER = "Singer";
@@ -40,14 +39,14 @@ public class Audio {
     public ArrayList<AudioPart> listPart = new ArrayList<>();
 
 
-    public static Audio createAudio(JsonObject jsonAudio,JsonObject jsonSinger) {
+    public static Audio createAudio(JsonObject jsonAudio, JsonObject jsonSinger) {
         Audio audio = new Audio();
-        audio.idAudio = jsonObject.get(ID_AUDIO).getAsInt();
-        audio.title = jsonObject.get(TITLE).getAsString();
-        audio.viewCount = jsonObject.get(VIEW_COUNT).getAsInt();
-        audio.downloadCount = jsonObject.get(DOWNLOAD_COUNT).getAsInt();
-        audio.partCount = jsonObject.get(PART_COUNT).getAsInt();
-        JsonArray arrUrl = jsonObject.get(URL).getAsJsonArray();
+        audio.idAudio = jsonAudio.get(ID_AUDIO).getAsInt();
+        audio.title = jsonAudio.get(TITLE).getAsString();
+        audio.viewCount = jsonAudio.get(VIEW_COUNT).getAsInt();
+        audio.downloadCount = jsonAudio.get(DOWNLOAD_COUNT).getAsInt();
+        audio.partCount = jsonAudio.get(PART_COUNT).getAsInt();
+        JsonArray arrUrl = jsonAudio.get(URL).getAsJsonArray();
         ArrayList<AudioPart> listURL = new ArrayList<AudioPart>();
         for (int i = 0; i < arrUrl.size(); i++) {
             JsonObject urlJson = arrUrl.get(i).getAsJsonObject();
@@ -55,9 +54,9 @@ public class Audio {
         }
         Collections.sort(listURL, comparator); // use the comparator as much as u want
         audio.listPart = listURL;
-        audio.rate = jsonObject.get(RATE).getAsFloat();
-        JsonObject singerJson = jsonObject.get(SINGER).getAsJsonObject();
-        audio.title = jsonObject.get(Length).getAsString();
+        audio.rate = jsonAudio.get(RATE).getAsFloat();
+        JsonObject singerJson = jsonAudio.get(SINGER).getAsJsonObject();
+        audio.title = jsonAudio.get(Length).getAsString();
 
         audio.singer = Singer.createSinger(singerJson);
         return audio;
