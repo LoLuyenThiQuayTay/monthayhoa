@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.adapter.AudioDownloadedAdapter;
+import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
+import hecosodulieudaphuongtien.demonhom19.mediaplayer.PlayerPart;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
 import hecosodulieudaphuongtien.demonhom19.model.Singer;
 import hecosodulieudaphuongtien.demonhom19.sqlite.DataSource;
@@ -87,11 +89,13 @@ public class HomeFragment extends Fragment implements AudioDownloadedAdapter.OnC
     public void onClickItem(int position) {
         Audio audio = new Audio();
         audio.title = "Test";
-        ArrayList<String> listURL = new ArrayList<>();
-        listURL.add("http://api.taplifeapp.com:6969/Uploads/1.mp3");
-        listURL.add("http://api.taplifeapp.com:6969/Uploads/2.mp3");
-        audio.listRealUrl = listURL;
-        activity.getPlayerController().playOnline(audio);
+        ArrayList<Audio.AudioPart> listURL = new ArrayList<>();
+        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/2.mp3", "0:05"));
+        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/1.mp3", "0:08"));
+        audio.listPart = listURL;
+        audio.singer = new Singer("AliciaKeys");
+        MyPlayer.getInstance().playOnline(audio);
+        activity.replaceFragmentUp(new PlayerFragment(audio));
 
 //        player = new MediaPlayer();
 //        player.reset();

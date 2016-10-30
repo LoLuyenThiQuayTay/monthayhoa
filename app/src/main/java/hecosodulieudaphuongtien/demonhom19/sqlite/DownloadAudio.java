@@ -37,32 +37,32 @@ public class DownloadAudio extends AsyncTask<String, String, String> {
     protected String doInBackground(String... aurl) {
         int count;
 
-        try {
-            URL url = new URL(audio.getURL(0));
-            URLConnection connection = url.openConnection();
-            connection.connect();
-
-            int lenghtOfFile = connection.getContentLength();
-
-            InputStream input = new BufferedInputStream(url.openStream());
-            OutputStream output = new FileOutputStream(new File("/sdcard/Music/" + audio.title + ".mp3"));
-
-            byte data[] = new byte[1024];
-
-            long total = 0;
-
-            while ((count = input.read(data)) != -1) {
-                total += count;
-                publishProgress("" + (int) ((total * 100) / lenghtOfFile));
-                output.write(data, 0, count);
-
-            }
-
-            output.flush();
-            output.close();
-            input.close();
-        } catch (Exception e) {
-        }
+//        try {
+//            URL url = new URL(audio.g(0));
+//            URLConnection connection = url.openConnection();
+//            connection.connect();
+//
+//            int lenghtOfFile = connection.getContentLength();
+//
+//            InputStream input = new BufferedInputStream(url.openStream());
+//            OutputStream output = new FileOutputStream(new File("/sdcard/Music/" + audio.title + ".mp3"));
+//
+//            byte data[] = new byte[1024];
+//
+//            long total = 0;
+//
+//            while ((count = input.read(data)) != -1) {
+//                total += count;
+//                publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+//                output.write(data, 0, count);
+//
+//            }
+//
+//            output.flush();
+//            output.close();
+//            input.close();
+//        } catch (Exception e) {
+//        }
         return null;
 
     }

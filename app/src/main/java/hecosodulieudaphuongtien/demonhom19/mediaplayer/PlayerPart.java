@@ -7,24 +7,26 @@ import android.net.Uri;
 
 import java.io.IOException;
 
+import hecosodulieudaphuongtien.demonhom19.model.Audio;
+
 /**
  * Created by Z170A Gaming M7 on 10/28/2016.
  */
 public class PlayerPart implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
     public MediaPlayer player;
     public int position;
-    public String url;
+    public Audio.AudioPart playerPart;
     public OnCompletedPart listener;
 
-    public PlayerPart(String url, int position, OnCompletedPart listener) {
+    public PlayerPart(Audio.AudioPart audioPart, int position, OnCompletedPart listener) {
         this.listener = listener;
-        this.url = url;
+        this.playerPart = audioPart;
         this.position = position;
         player = new MediaPlayer();
         player.reset();
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            player.setDataSource(url);
+            player.setDataSource(audioPart.url);
             player.setOnPreparedListener(this);
             player.prepareAsync();
         } catch (IOException e) {
@@ -54,6 +56,10 @@ public class PlayerPart implements MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     public void onResume() {
         player.start();
+    }
+
+    public void onReset() {
+        player.reset();
     }
 
     public void onPrepare() {

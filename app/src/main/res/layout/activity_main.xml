@@ -9,16 +9,9 @@
     android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
-    <include
-        android:id="@+id/player"
-        layout="@layout/view_mediaplayer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"></include>
 
     <FrameLayout
         android:id="@+id/fragment_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/player"></FrameLayout>
+        android:layout_height="match_parent"></FrameLayout>
 </RelativeLayout>

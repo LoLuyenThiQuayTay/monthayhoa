@@ -16,33 +16,27 @@ import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
  * Created by admin on 3/29/2016.
  */
 public class MyPlayer implements View.OnClickListener, OnCompletedPart {
-    private MainActivity activity;
+    private static MainActivity activity;
 
-    private TextView tv_Title;
-    private LinearLayout btnPlay, btnForward, btnBackward;
-    private ImageView iconPlay;
-    private RelativeLayout viewPlayer;
     public static boolean isPlaying = false;
     public static int partPlaying = 0;
 
     public static ArrayList<PlayerPart> listPlayer;
 
-    public MyPlayer(MainActivity activity) {
-        this.activity = activity;
-        init();
+    private static MyPlayer instance;
+
+    private MyPlayer() {
     }
 
-    public void init() {
-        tv_Title = (TextView) activity.findViewById(R.id.tv_title);
-        iconPlay = (ImageView) activity.findViewById(R.id.iv_play);
-        btnBackward = (LinearLayout) activity.findViewById(R.id.btn_backward);
-        btnForward = (LinearLayout) activity.findViewById(R.id.btn_forward);
-        btnPlay = (LinearLayout) activity.findViewById(R.id.btn_play);
-//        viewPlayer = (RelativeLayout) activity.findViewById(R.id.player);
-//        viewPlayer.setVisibility(View.GONE);
-        btnPlay.setOnClickListener(this);
-        btnBackward.setOnClickListener(this);
-        btnForward.setOnClickListener(this);
+    public static void initIfNeed(MainActivity mactivity) {
+        activity = mactivity;
+    }
+
+    public static MyPlayer getInstance() {
+        if (instance == null) {
+            instance = new MyPlayer();
+        }
+        return instance;
     }
 
     public void playOnline(Audio audio) {
@@ -50,17 +44,18 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 //        if (viewPlayer.getVisibility() != View.VISIBLE) {
 //            viewPlayer.setVisibility(View.VISIBLE);
 //        }
-        tv_Title.setText(audio.title);
-        iconPlay.setBackgroundResource(R.drawable.pause_circle);
-
+        onReset();
         listPlayer = new ArrayList<>();
         partPlaying = 0;
-        for (int i = 0; i < audio.listRealUrl.size(); i++) {
-            PlayerPart playerPart = new PlayerPart(audio.getURL(i), i, this);
+        for (int i = 0; i < audio.listPart.size(); i++) {
+            PlayerPart playerPart = new PlayerPart(audio.listPart.get(i), i, this);
             listPlayer.add(playerPart);
         }
-//        listPlayer.get(0).onPrepare();
 
+    }
+
+    public boolean isIsPlaying() {
+        return listPlayer.get(partPlaying).player.isPlaying();
     }
 
     public void playOffline(String title) {
@@ -68,8 +63,6 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 //        if (viewPlayer.getVisibility() != View.VISIBLE) {
 //            viewPlayer.setVisibility(View.VISIBLE);
 //        }
-        tv_Title.setText(title);
-        iconPlay.setBackgroundResource(R.drawable.pause_circle);
         listPlayer = new ArrayList<>();
         partPlaying = 0;
         PlayerPart playerPart = new PlayerPart(title, activity, this);
@@ -79,6 +72,25 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 
     public void seekForward() {
 
+    }
+
+    public void onPause() {
+        listPlayer.get(partPlaying).onPause();
+    }
+
+    public void onReset() {
+        try {
+            for (int i = 0; i < listPlayer.size(); i++) {
+                listPlayer.get(i).onReset();
+            }
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    public void onResume() {
+        listPlayer.get(partPlaying).onResume();
     }
 
     public void seekBackward() {
@@ -92,11 +104,8 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
             case R.id.btn_play:
                 if (isPlaying) {
                     listPlayer.get(partPlaying).onPause();
-                    iconPlay.setBackgroundResource(R.drawable.play_circle);
                 } else {
                     listPlayer.get(partPlaying).onResume();
-
-                    iconPlay.setBackgroundResource(R.drawable.pause_circle);
                 }
                 break;
             case R.id.btn_backward:
@@ -113,6 +122,9 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     public void onCompletedPart(int position) {
         if (position < listPlayer.size() - 1) {
             listPlayer.get(position + 1).onResume();
+            partPlaying++;
+        } else {
+            partPlaying = 0;
         }
     }
 }

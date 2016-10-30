@@ -15,7 +15,7 @@ public class Singer {
 
     public int id;
     public String name;
-    public String realUrl;
+    public String urlAvatar = "";
     public String profile;
 
     public Singer(String name) {
@@ -30,7 +30,7 @@ public class Singer {
         singer.id = singerJson.get(ID).getAsInt();
         singer.name = singerJson.get(NAME).getAsString();
         singer.profile = singerJson.get(PROFILE).getAsString();
-        singer.realUrl = singerJson.get(AVATAR).getAsString();
+        singer.urlAvatar = singerJson.get(AVATAR).getAsString();
         return singer;
     }
 }
