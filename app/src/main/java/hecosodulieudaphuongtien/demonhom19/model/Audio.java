@@ -14,11 +14,12 @@ import java.util.List;
 public class Audio {
     public static final String ID_AUDIO = "ID_Audio";
     public static final String TITLE = "Title";
-    public static final String VIEW_COUNT = "PartPosition";
-    public static final String DOWNLOAD_COUNT = "PartPosition";
-    public static final String PART_COUNT = "PartPosition";
+    public static final String VIEW_COUNT = "ViewCount";
+    public static final String DOWNLOAD_COUNT = "DownloadCount";
+    public static final String PART_COUNT = "PartCount";
     public static final String PART_POSITION = "PartPosition";
     public static final String URL = "Url";
+    public static final String RATE = "Rate";
     public static final String RATE = "PartPosition";
     public static final String Length = "Length";
 
@@ -39,7 +40,7 @@ public class Audio {
     public ArrayList<AudioPart> listPart = new ArrayList<>();
 
 
-    public static Audio createAudio(JsonObject jsonObject) {
+    public static Audio createAudio(JsonObject jsonAudio,JsonObject jsonSinger) {
         Audio audio = new Audio();
         audio.idAudio = jsonObject.get(ID_AUDIO).getAsInt();
         audio.title = jsonObject.get(TITLE).getAsString();

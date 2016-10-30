@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
  */
 public class Singer {
 
-    public static final String ID = "id";
+    public static final String ID = "ID_Singer";
     public static final String NAME = "Name";
     public static final String PROFILE = "Profile";
     public static final String AVATAR = "UrlImage";
