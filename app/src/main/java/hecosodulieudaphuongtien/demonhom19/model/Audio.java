@@ -1,12 +1,13 @@
 package hecosodulieudaphuongtien.demonhom19.model;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by admin on 3/26/2016.
@@ -118,7 +119,7 @@ public class Audio {
                     break;
 
             }
-            return duration;
+            return duration * 1000;
 
         }
     }
@@ -143,11 +144,13 @@ public class Audio {
         }
     }
 
-    public int getPositionPartPlaying(int percent) {
+    public int findPositionPartPlaying(int percent) {
         int position = 0;
-        if (percent < listPart.get(0).percent) return position;
+        if (percent <= listPart.get(0).percent) {
+            return position;
+        }
         for (int i = 1; i < listPart.size(); i++) {
-            if (listPart.get(i - 1).percent <= percent && listPart.get(i).percent > percent) {
+            if (listPart.get(i - 1).percent < percent && getCurentPercent(i) >= percent) {
                 position = i;
                 break;
             }
@@ -155,4 +158,43 @@ public class Audio {
         return position;
     }
 
+    public int getCurentPercent(int position) {
+        int currentPercent = 0;
+        for (int i = 0; i < listPart.size(); i++) {
+            if (i <= position) {
+                currentPercent += listPart.get(i).percent;
+            }
+        }
+        return currentPercent;
+    }
+
+    public int getCurrentPositionAudio(int percent) {
+        int currentPosition = 0;
+        int positionPart = findPositionPartPlaying(percent);
+
+        if (positionPart == 0) {
+            AudioPart firstPart = listPart.get(0);
+            currentPosition = progressToTimer(percent, getAudioLength());
+        } else {
+            int totalPercentPlayed = 0;
+            for (int i = 0; i <= positionPart; i++) {
+                if (i < positionPart) {
+                    currentPosition += listPart.get(i).getLengthFromString();
+                    totalPercentPlayed += listPart.get(i).percent;
+                } else if (i == positionPart) {
+                    int percentInPart = percent - totalPercentPlayed;
+                    currentPosition += progressToTimer(percentInPart, getAudioLength());
+                }
+            }
+        }
+        return currentPosition;
+    }
+
+    public int progressToTimer(int progress, int totalDuration) {
+        int currentDuration = 0;
+        totalDuration = (int) (totalDuration / 1000);
+        currentDuration = (int) ((((double) progress) / 100) * totalDuration);
+
+        return currentDuration * 1000;
+    }
 }

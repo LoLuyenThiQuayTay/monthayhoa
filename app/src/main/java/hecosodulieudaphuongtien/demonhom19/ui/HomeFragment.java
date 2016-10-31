@@ -90,8 +90,12 @@ public class HomeFragment extends Fragment implements AudioDownloadedAdapter.OnC
         Audio audio = new Audio();
         audio.title = "Test";
         ArrayList<Audio.AudioPart> listURL = new ArrayList<>();
+        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/1.mp3", "00:11"));
+
         listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/2.mp3", "00:08"));
         listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/1.mp3", "00:11"));
+
+
         audio.listPart = listURL;
         audio.singer = new Singer("AliciaKeys");
         MyPlayer.getInstance().playOnline(audio);

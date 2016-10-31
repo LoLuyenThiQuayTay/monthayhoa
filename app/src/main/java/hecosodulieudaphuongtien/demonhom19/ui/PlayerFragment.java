@@ -30,7 +30,7 @@ import hecosodulieudaphuongtien.demonhom19.model.Audio;
  * Created by admin on 10/30/2016.
  */
 @SuppressLint("ValidFragment")
-public class PlayerFragment extends Fragment implements View.OnClickListener {
+public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
     public Toolbar toolbar;
     public ImageView btnPlay, btnRate, btnDownload, ivAvatar;
     public SeekBar seekBar;
@@ -55,7 +55,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_player_detail, container, false);
         init(rootView);
-//        updateSeekBar();
+        updateSeekBar();
         return rootView;
     }
 
@@ -96,8 +96,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 ivAvatar.setImageDrawable(circularBitmapDrawable);
             }
         });
-        Log.e("AAAAA", "init: " + audioPlaying.getAudioLength());
         totalTime.setText(getStringTime(audioPlaying.getAudioLength()));
+        seekBar.setOnSeekBarChangeListener(this);
     }
 
     public void updateSeekBar() {
@@ -125,13 +125,29 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        int percent = seekBar.getProgress();
+        MyPlayer.getInstance().seekTo(percent);
+        updateSeekBar();
+    }
+
     private Runnable mUpdateTimeTask = new Runnable() {
 
         public void run() {
 
             int totalDuration = MyPlayer.getInstance().getDuration();
             int currentDuration = MyPlayer.getInstance().getCurrentPosition();
-            totalTime.setText(getStringTime(totalDuration));
             currentTime.setText(getStringTime(currentDuration));
             int progress = (int) (getProgressPercentage(currentDuration, totalDuration));
             seekBar.setProgress(progress);

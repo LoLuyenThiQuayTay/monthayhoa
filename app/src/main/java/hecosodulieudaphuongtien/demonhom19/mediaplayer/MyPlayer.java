@@ -1,10 +1,7 @@
 package hecosodulieudaphuongtien.demonhom19.mediaplayer;
 
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -154,5 +151,30 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 
     public int getPositionPartPlaying() {
         return audioPlaying.partPlaying;
+    }
+
+    public int currentPositionAudioToCurrentPositionPart(int percent) {
+        int currentDuration = audioPlaying.getCurrentPositionAudio(percent);
+        int currentPartPosition = audioPlaying.findPositionPartPlaying(percent);
+
+        int durationPlayed = 0;
+        for (int i = 0; i < audioPlaying.listPart.size(); i++) {
+            if (i < currentPartPosition) {
+                durationPlayed += audioPlaying.listPart.get(i).getLengthFromString();
+            }
+        }
+        return currentDuration - durationPlayed;
+    }
+
+    public void seekTo(int percent) {
+        int currentPartPosition = audioPlaying.findPositionPartPlaying(percent);
+        if (currentPartPosition != audioPlaying.partPlaying) {
+            listPlayer.get(audioPlaying.partPlaying).onPause();
+            audioPlaying.partPlaying = currentPartPosition;
+            listPlayer.get(currentPartPosition).onResume();
+        }
+        Log.e("AA", "seekTo: currentPartPosition " + currentPartPosition + " ---" + currentPositionAudioToCurrentPositionPart(percent));
+        listPlayer.get(currentPartPosition).player.seekTo(currentPositionAudioToCurrentPositionPart(percent));
+
     }
 }
