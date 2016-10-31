@@ -68,7 +68,7 @@ public class PlayerPart implements MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        if (position == MyPlayer.partPlaying)
+        if (position == MyPlayer.getInstance().getPositionPartPlaying())
             player.start();
     }
 

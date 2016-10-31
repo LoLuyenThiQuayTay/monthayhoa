@@ -3,19 +3,24 @@ package hecosodulieudaphuongtien.demonhom19.ui;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
+import org.w3c.dom.Text;
 
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
@@ -31,6 +36,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public SeekBar seekBar;
     public Audio audioPlaying;
     private MainActivity activity;
+    private Handler mHandler;
+    private TextView currentTime, totalTime;
 
     public PlayerFragment(Audio audioPlaying) {
         this.audioPlaying = audioPlaying;
@@ -40,6 +47,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.activity = (MainActivity) getActivity();
+        mHandler = new Handler();
     }
 
     @Nullable
@@ -47,10 +55,13 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_player_detail, container, false);
         init(rootView);
+//        updateSeekBar();
         return rootView;
     }
 
     private void init(View rootView) {
+        currentTime = (TextView) rootView.findViewById(R.id.tvCurrent);
+        totalTime = (TextView) rootView.findViewById(R.id.tvTotal);
         btnPlay = (ImageView) rootView.findViewById(R.id.play);
         btnRate = (ImageView) rootView.findViewById(R.id.rate);
         btnDownload = (ImageView) rootView.findViewById(R.id.download);
@@ -85,6 +96,12 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 ivAvatar.setImageDrawable(circularBitmapDrawable);
             }
         });
+        Log.e("AAAAA", "init: " + audioPlaying.getAudioLength());
+        totalTime.setText(getStringTime(audioPlaying.getAudioLength()));
+    }
+
+    public void updateSeekBar() {
+        mHandler.postDelayed(mUpdateTimeTask, 100);
     }
 
     @Override
@@ -106,5 +123,56 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             case R.id.download:
                 break;
         }
+    }
+
+    private Runnable mUpdateTimeTask = new Runnable() {
+
+        public void run() {
+
+            int totalDuration = MyPlayer.getInstance().getDuration();
+            int currentDuration = MyPlayer.getInstance().getCurrentPosition();
+            totalTime.setText(getStringTime(totalDuration));
+            currentTime.setText(getStringTime(currentDuration));
+            int progress = (int) (getProgressPercentage(currentDuration, totalDuration));
+            seekBar.setProgress(progress);
+
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+    public int getProgressPercentage(long currentDuration, long totalDuration) {
+        Double percentage = (double) 0;
+
+        long currentSeconds = (int) (currentDuration / 1000);
+        long totalSeconds = (int) (totalDuration / 1000);
+        percentage = (((double) currentSeconds) / totalSeconds) * 100;
+        return percentage.intValue();
+    }
+
+    private String getStringTime(int duration) {
+        String newTime;
+        long totalSec = duration / 1000;
+        long minute = totalSec / 60;
+        long sec = totalSec % 60;
+        if (minute > 100) return ("--:--");
+        if (minute < 10) {
+            if (sec < 10) {
+                newTime = "0" + minute + ":0" + sec;
+                return newTime;
+            } else {
+                newTime = "0" + minute + ":" + sec;
+                return newTime;
+            }
+        } else {
+            if (sec < 10) {
+                newTime = minute + ":0" + sec;
+                return newTime;
+            } else {
+                newTime = minute + ":" + sec;
+                return newTime;
+            }
+        }
+
+
     }
 }

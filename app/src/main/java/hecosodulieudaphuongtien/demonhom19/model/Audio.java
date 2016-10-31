@@ -37,6 +37,7 @@ public class Audio {
     public int number;
     private int length;
     public ArrayList<AudioPart> listPart = new ArrayList<>();
+    public int partPlaying = 0;
 
 
     public static Audio createAudio(JsonObject jsonAudio, JsonObject jsonSinger) {
@@ -68,6 +69,7 @@ public class Audio {
             return u2.positionPart - u1.positionPart; // use your logic
         }
     };
+
 
     public static class AudioPart {
         public int positionPart;
@@ -152,4 +154,5 @@ public class Audio {
         }
         return position;
     }
+
 }

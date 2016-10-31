@@ -19,14 +19,15 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     private static MainActivity activity;
 
     public static boolean isPlaying = false;
-    public static int partPlaying = 0;
 
     public static ArrayList<PlayerPart> listPlayer;
 
     private static MyPlayer instance;
+    private static Audio audioPlaying;
 
     private MyPlayer() {
     }
+
 
     public static void initIfNeed(MainActivity mactivity) {
         activity = mactivity;
@@ -45,17 +46,18 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 //            viewPlayer.setVisibility(View.VISIBLE);
 //        }
         onReset();
+        audioPlaying = audio;
         listPlayer = new ArrayList<>();
-        partPlaying = 0;
+        audioPlaying.partPlaying = 0;
         for (int i = 0; i < audio.listPart.size(); i++) {
             PlayerPart playerPart = new PlayerPart(audio.listPart.get(i), i, this);
             listPlayer.add(playerPart);
         }
-
+        audioPlaying.updatePartPercent();
     }
 
     public boolean isIsPlaying() {
-        return listPlayer.get(partPlaying).player.isPlaying();
+        return listPlayer.get(audioPlaying.partPlaying).player.isPlaying();
     }
 
     public void playOffline(String title) {
@@ -64,7 +66,7 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
 //            viewPlayer.setVisibility(View.VISIBLE);
 //        }
         listPlayer = new ArrayList<>();
-        partPlaying = 0;
+        audioPlaying.partPlaying = 0;
         PlayerPart playerPart = new PlayerPart(title, activity, this);
         listPlayer.add(playerPart);
 
@@ -75,7 +77,7 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     }
 
     public void onPause() {
-        listPlayer.get(partPlaying).onPause();
+        listPlayer.get(audioPlaying.partPlaying).onPause();
     }
 
     public void onReset() {
@@ -90,7 +92,7 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     }
 
     public void onResume() {
-        listPlayer.get(partPlaying).onResume();
+        listPlayer.get(audioPlaying.partPlaying).onResume();
     }
 
     public void seekBackward() {
@@ -103,9 +105,9 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
         switch (id) {
             case R.id.btn_play:
                 if (isPlaying) {
-                    listPlayer.get(partPlaying).onPause();
+                    listPlayer.get(audioPlaying.partPlaying).onPause();
                 } else {
-                    listPlayer.get(partPlaying).onResume();
+                    listPlayer.get(audioPlaying.partPlaying).onResume();
                 }
                 break;
             case R.id.btn_backward:
@@ -122,9 +124,35 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     public void onCompletedPart(int position) {
         if (position < listPlayer.size() - 1) {
             listPlayer.get(position + 1).onResume();
-            partPlaying++;
+            audioPlaying.partPlaying++;
         } else {
-            partPlaying = 0;
+            audioPlaying.partPlaying = 0;
         }
+    }
+
+    public int getDuration() {
+        return audioPlaying.getAudioLength();
+    }
+
+    public int getCurrentPosition() {
+        int total = audioPlaying.getAudioLength();
+        int currentPosition = 0;
+        int partPlayingPosition = audioPlaying.partPlaying;
+        if (partPlayingPosition == 0) {
+            currentPosition = listPlayer.get(0).player.getCurrentPosition();
+        } else {
+            for (int i = 0; i < listPlayer.size(); i++) {
+                if (i < audioPlaying.partPlaying) {
+                    currentPosition = currentPosition + audioPlaying.listPart.get(i).getLengthFromString();
+                } else if (i == audioPlaying.partPlaying) {
+                    currentPosition = currentPosition + listPlayer.get(i).player.getCurrentPosition();
+                }
+            }
+        }
+        return currentPosition;
+    }
+
+    public int getPositionPartPlaying() {
+        return audioPlaying.partPlaying;
     }
 }

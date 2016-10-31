@@ -23,11 +23,38 @@
             android:layout_weight="80"
             android:src="@drawable/play" />
 
-        <SeekBar
-            android:id="@+id/seekbar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="5" />
+            android:layout_weight="5"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/tvCurrent"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:gravity="center"
+                android:text="0:20"
+                android:textSize="13sp" />
+
+            <SeekBar
+                android:id="@+id/seekbar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="80" />
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"
+                android:gravity="center"
+                android:text="2:20"
+                android:textSize="13sp" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
