@@ -41,7 +41,7 @@
                 <LinearLayout
                     android:id="@+id/countContent"
                     android:layout_width="80dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
@@ -63,6 +63,14 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/star"
                         android:text=" 200" />
+
+                    <TextView
+                        android:id="@+id/tvDownloadCount"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/download_small"
+                        android:text=" 200" />
                 </LinearLayout>
 
                 <ImageView
@@ -72,7 +80,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="55dp"
                     android:src="@drawable/play" />
             </RelativeLayout>
 
@@ -149,8 +157,11 @@
         android:id="@+id/backgroundRate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="#30000000"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="280dp"
@@ -214,11 +225,11 @@
                 android:textSize="18sp" />
 
             <ProgressBar
-                android:visibility="gone"
                 android:id="@+id/progress"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

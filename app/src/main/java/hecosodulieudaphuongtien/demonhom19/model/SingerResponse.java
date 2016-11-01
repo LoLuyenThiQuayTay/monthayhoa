@@ -15,8 +15,9 @@ public class SingerResponse extends BaseResponse {
         listSinger = new ArrayList<>();
         for (int i = 0; i < getListData().size(); i++) {
             JsonObject singerJson = getListData().get(i).getAsJsonObject();
-            listSinger.add(Singer.createSinger(singerJson));
-        }
+            Singer singer = Singer.createSinger(singerJson);
+            listSinger.add(singer);
 
+        }
     }
 }

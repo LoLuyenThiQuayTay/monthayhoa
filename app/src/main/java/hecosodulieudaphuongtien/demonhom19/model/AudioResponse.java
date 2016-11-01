@@ -16,12 +16,11 @@ public class AudioResponse extends BaseResponse {
     public AudioResponse(String jsonString) {
         super(jsonString);
         listAudio = new ArrayList<>();
-        JsonArray audiosArr = getData().get(AUDIOS).getAsJsonArray();
-      final   JsonObject singerObject = getData().get(SINGER).getAsJsonObject();
 
+        JsonArray audiosArr = getListData();
         for (int i = 0; i < audiosArr.size(); i++) {
             JsonObject audioJson = audiosArr.get(i).getAsJsonObject();
-            listAudio.add(Audio.createAudio(audioJson,singerObject));
+            listAudio.add(Audio.createAudio(audioJson));
         }
     }
 }

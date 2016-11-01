@@ -1,7 +1,5 @@
 package hecosodulieudaphuongtien.demonhom19.model;
 
-import android.util.Log;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -41,10 +39,10 @@ public class Audio {
     public int partPlaying = 0;
 
 
-    public static Audio createAudio(JsonObject jsonAudio, JsonObject jsonSinger) {
+    public static Audio createAudio(JsonObject jsonAudio) {
         Audio audio = new Audio();
         audio.idAudio = jsonAudio.get(ID_AUDIO).getAsInt();
-        audio.title = jsonAudio.get(TITLE).getAsString();
+        audio.title = jsonAudio.get(TITLE).getAsString().trim();
         audio.viewCount = jsonAudio.get(VIEW_COUNT).getAsInt();
         audio.downloadCount = jsonAudio.get(DOWNLOAD_COUNT).getAsInt();
         audio.partCount = jsonAudio.get(PART_COUNT).getAsInt();
@@ -58,16 +56,35 @@ public class Audio {
         audio.listPart = listURL;
         audio.rate = jsonAudio.get(RATE).getAsFloat();
         JsonObject singerJson = jsonAudio.get(SINGER).getAsJsonObject();
-        audio.title = jsonAudio.get(Length).getAsString();
-
         audio.singer = Singer.createSinger(singerJson);
         return audio;
     }
 
+    public static Audio createAudio(JsonObject jsonAudio, Singer singer) {
+        Audio audio = new Audio();
+        audio.idAudio = jsonAudio.get(ID_AUDIO).getAsInt();
+        audio.title = jsonAudio.get(TITLE).getAsString().trim();
+        audio.viewCount = jsonAudio.get(VIEW_COUNT).getAsInt();
+        audio.downloadCount = jsonAudio.get(DOWNLOAD_COUNT).getAsInt();
+        audio.partCount = jsonAudio.get(PART_COUNT).getAsInt();
+        JsonArray arrUrl = jsonAudio.get(URL).getAsJsonArray();
+        ArrayList<AudioPart> listURL = new ArrayList<AudioPart>();
+        for (int i = 0; i < arrUrl.size(); i++) {
+            JsonObject urlJson = arrUrl.get(i).getAsJsonObject();
+            listURL.add(AudioPart.createUrl(urlJson));
+        }
+        Collections.sort(listURL, comparator); // use the comparator as much as u want
+        audio.listPart = listURL;
+        audio.rate = jsonAudio.get(RATE).getAsFloat();
+        audio.singer = singer;
+        return audio;
+    }
+
+    //vl ong dat deo hieu sao :D ditme ghe chua ghe v l
     public static Comparator<AudioPart> comparator = new Comparator<AudioPart>() {
         @Override
         public int compare(AudioPart u1, AudioPart u2) {
-            return u2.positionPart - u1.positionPart; // use your logic
+            return (u1.positionPart - u2.positionPart); // use your logic
         }
     };
 
@@ -90,8 +107,8 @@ public class Audio {
         public static AudioPart createUrl(JsonObject jsonObject) {
             AudioPart url = new AudioPart();
             url.positionPart = jsonObject.get(PART_POSITION).getAsInt();
-            url.url = jsonObject.get(URL).getAsString();
-            url.lengthString = jsonObject.get(Length).getAsString();
+            url.url = jsonObject.get(URL).getAsString().trim();
+            url.lengthString = jsonObject.get(Length).getAsString().trim();
             return url;
 
         }

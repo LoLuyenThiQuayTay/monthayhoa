@@ -27,10 +27,12 @@ public class Singer {
 
     public static Singer createSinger(JsonObject singerJson) {
         Singer singer = new Singer();
+
         singer.id = singerJson.get(ID).getAsInt();
-        singer.name = singerJson.get(NAME).getAsString();
-        singer.profile = singerJson.get(PROFILE).getAsString();
-        singer.urlAvatar = singerJson.get(AVATAR).getAsString();
+        singer.name = singerJson.get(NAME).getAsString().trim();
+        singer.profile = singerJson.get(PROFILE).getAsString().trim();
+        singer.urlAvatar = singerJson.get(AVATAR).getAsString().trim();
         return singer;
     }
+    // con ba no !
 }

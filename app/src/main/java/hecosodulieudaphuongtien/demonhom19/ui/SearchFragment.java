@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
@@ -22,14 +24,20 @@ import hecosodulieudaphuongtien.demonhom19.adapter.AudioAdapter;
 import hecosodulieudaphuongtien.demonhom19.adapter.SingerAdapter;
 import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.AudioResponse;
 import hecosodulieudaphuongtien.demonhom19.model.Singer;
-import hecosodulieudaphuongtien.demonhom19.model.Utils;
+import hecosodulieudaphuongtien.demonhom19.model.SingerResponse;
+import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
+import hecosodulieudaphuongtien.demonhom19.webservice.ServiceManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by admin on 3/24/2016.
  */
 public class SearchFragment extends Fragment implements TextWatcher, AudioAdapter.OnClickItemRecyclerView, SingerAdapter.OnClickItemRecyclerView {
-    private final String URL_GET_ALL_AUDIOS = Utils.BASE_URL + "hecsdldpt19/android_connect/get_all_audios.php";
 
     private ArrayList<Audio> listAudios = new ArrayList<>();
     private MainActivity activity;
@@ -87,6 +95,15 @@ public class SearchFragment extends Fragment implements TextWatcher, AudioAdapte
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 // something
+        String input = etSearch.getText().toString();
+        if (!input.trim().equals("")) {
+            ServiceManager.getServerInstance().searchSingerByName(input).enqueue(responseSinger);
+            ServiceManager.getServerInstance().searchAudioByName(input).enqueue(responAudio);
+        } else {
+            adapterSinger.updateData(new ArrayList<Singer>());
+            adapterAudio.updateData(new ArrayList<Audio>());
+        }
+//ngon roi nguoi anh em uh
     }
 
     @Override
@@ -101,7 +118,54 @@ public class SearchFragment extends Fragment implements TextWatcher, AudioAdapte
     }
 
     @Override
+    public void onClickSubItem(Audio audio) {
+        DownloadAudio downloadAudio = new DownloadAudio(activity, audio, null);
+        downloadAudio.execute();
+    }
+
+    @Override
     public void onClickItem(Singer singer) {
         activity.replaceFragment(new DetailSingerFragment(singer));
     }
+
+
+    private Callback<ResponseBody> responAudio = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            try {
+                String stringResponse = response.body().string();
+                AudioResponse audioResponse = new AudioResponse(stringResponse);
+                if (audioResponse.success > 0) {
+                    adapterAudio.updateData(audioResponse.listAudio);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+        }
+    };
+    private Callback<ResponseBody> responseSinger = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            try {
+                String stringResponse = response.body().string();
+                Log.e("WTF", "onResponse: " + stringResponse);
+                SingerResponse singerResponse = new SingerResponse(stringResponse);
+                if (singerResponse.success > 0) {
+                    adapterSinger.updateData(singerResponse.listSinger);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+        }
+    };
 }

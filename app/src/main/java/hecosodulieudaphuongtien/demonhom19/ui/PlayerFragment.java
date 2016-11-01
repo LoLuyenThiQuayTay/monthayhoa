@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,25 +23,32 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
-import org.w3c.dom.Text;
+import java.io.IOException;
 
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.SimpleResponse;
 import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
+import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadListener;
+import hecosodulieudaphuongtien.demonhom19.webservice.ServiceManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by admin on 10/30/2016.
  */
 @SuppressLint("ValidFragment")
-public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, DownloadListener {
     public Toolbar toolbar;
     public ImageView btnPlay, btnRate, btnDownload, ivAvatar;
     public SeekBar seekBar;
     public Audio audioPlaying;
     private MainActivity activity;
     private Handler mHandler;
-    private TextView currentTime, totalTime, tvViewCoung, tvRate, tvSingerName, btnDiscard, btnOK;
+    private TextView currentTime, totalTime, tvViewCount, tvDownloadCount, tvRate, tvSingerName, btnDiscard, btnOK;
     private LinearLayout contentCount;
     private RelativeLayout background;
     private RatingBar ratingBar;
@@ -75,7 +81,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         ratingBar = (RatingBar) rootView.findViewById(R.id.ratingBar);
         contentCount = (LinearLayout) rootView.findViewById(R.id.countContent);
         tvRate = (TextView) rootView.findViewById(R.id.tvRateCount);
-        tvViewCoung = (TextView) rootView.findViewById(R.id.tvViewCount);
+        tvDownloadCount = (TextView) rootView.findViewById(R.id.tvDownloadCount);
+        tvViewCount = (TextView) rootView.findViewById(R.id.tvViewCount);
         currentTime = (TextView) rootView.findViewById(R.id.tvCurrent);
         totalTime = (TextView) rootView.findViewById(R.id.tvTotal);
         btnPlay = (ImageView) rootView.findViewById(R.id.play);
@@ -111,8 +118,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
             contentCount.setVisibility(View.GONE);
         } else {
             contentCount.setVisibility(View.VISIBLE);
-            tvViewCoung.setText(" " + audioPlaying.viewCount);
+            tvViewCount.setText(" " + audioPlaying.viewCount);
             tvRate.setText(" " + audioPlaying.rate);
+            tvDownloadCount.setText(" " + audioPlaying.downloadCount);
         }
 
         if (MyPlayer.getInstance().isIsPlaying()) {
@@ -158,7 +166,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
                 background.setVisibility(View.VISIBLE);
                 break;
             case R.id.download:
-                DownloadAudio downloadAudio = new DownloadAudio(activity, audioPlaying);
+                DownloadAudio downloadAudio = new DownloadAudio(activity, audioPlaying, this);
                 downloadAudio.execute();
                 break;
             case R.id.backgroundRate:
@@ -170,6 +178,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
             case R.id.btnOK:
                 float rate = ratingBar.getRating();
                 progressBar.setVisibility(View.VISIBLE);
+                ServiceManager.getServerInstance().updateRate(audioPlaying.idAudio, rate).enqueue(callBackRate);
+
                 break;
         }
     }
@@ -249,5 +259,42 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         }
 
 
+    }
+
+    public Callback<ResponseBody> callBackRate = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            progressBar.setVisibility(View.GONE);
+            background.setVisibility(View.GONE);
+            try {
+                String string = response.body().string();
+                SimpleResponse simpleResponse = new SimpleResponse(string);
+                {
+                    if (simpleResponse.success > 0) {
+                        float newRate = simpleResponse.getData().get("Rate").getAsFloat();
+                        tvRate.setText(" " + newRate);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            progressBar.setVisibility(View.GONE);
+            background.setVisibility(View.GONE);
+        }
+    };
+
+    @Override
+    public void onStartDownload() {
+
+    }
+
+    @Override
+    public void onFinishDownload(int newCount) {
+        tvDownloadCount.setText(" " + newCount);
     }
 }

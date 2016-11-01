@@ -65,7 +65,14 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
         holder.btnDownload.setVisibility(View.VISIBLE);
         holder.tvViewCount.setText(" " + audio.viewCount);
         holder.tvRateCount.setText(" " + audio.rate);
+        holder.btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClickSubItem(audio);
+            }
+        });
     }
+
 
     public ArrayList<Audio> getListData() {
         return listData;
@@ -98,5 +105,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
 
     public interface OnClickItemRecyclerView {
         public void onClickItem(Audio audio);
+
+        public void onClickSubItem(Audio audio);
     }
 }

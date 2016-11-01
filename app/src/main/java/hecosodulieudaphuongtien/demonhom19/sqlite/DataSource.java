@@ -40,6 +40,7 @@ public class DataSource {
             part.lengthString = cursor.getString(2);
             audio.listPart.add(part);
             Singer singer = new Singer(cursor.getString(3));
+            singer.urlAvatar = cursor.getString(4);
             audio.singer = singer;
             audio.number = num;
             num++;
@@ -57,6 +58,7 @@ public class DataSource {
         insertValues.put("id", audio.idAudio);
         insertValues.put("length", audio.getStringTime(audio.getAudioLength()));
         insertValues.put("singerName", audio.singer.name);
+        insertValues.put("singerImageUrl", audio.singer.urlAvatar);
         sqLiteDatabase.insert("audio", null, insertValues);
 
     }

@@ -16,10 +16,11 @@ public class BaseResponse {
     public int success;
     private JsonObject data;
     private JsonArray listData;
-
+//hinh nhu tai cai dong ky tu trang kia lam the nao bay h  sua cai text y thanh k gioihan bay h sua chi co tao lai cai khac thoi vkl
 
     public BaseResponse(String jsonString) {
         JsonParser jsonParser = new JsonParser();
+
         JsonObject jsonObject = jsonParser.parse(jsonString).getAsJsonObject();
         if (!jsonObject.get(PROCESS_CODE).isJsonNull()) {
             success = jsonObject.get(PROCESS_CODE).getAsInt();

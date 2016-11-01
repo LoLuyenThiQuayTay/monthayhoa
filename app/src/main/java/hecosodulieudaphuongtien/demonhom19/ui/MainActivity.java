@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import java.sql.SQLException;
 
@@ -70,7 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void makeNotification(String message) {
-        Snackbar.make(this.getCurrentFocus(), message, Snackbar.LENGTH_SHORT).show();
+        try {
+            Snackbar.make(this.getCurrentFocus(), message, Snackbar.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
     }
 
 

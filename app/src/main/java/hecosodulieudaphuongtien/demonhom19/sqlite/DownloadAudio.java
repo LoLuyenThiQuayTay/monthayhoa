@@ -15,7 +15,13 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.SimpleResponse;
 import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
+import hecosodulieudaphuongtien.demonhom19.webservice.ServiceManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by admin on 3/30/2016.
@@ -23,9 +29,11 @@ import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
 public class DownloadAudio extends AsyncTask<String, String, String> {
     private MainActivity activity;
     private Audio audio;
+    private DownloadListener listener;
     File rootDir = Environment.getExternalStorageDirectory();
 
-    public DownloadAudio(MainActivity activity, Audio audio) {
+    public DownloadAudio(MainActivity activity, Audio audio, DownloadListener listener) {
+        this.listener = listener;
         this.activity = activity;
         this.audio = audio;
     }
@@ -34,15 +42,18 @@ public class DownloadAudio extends AsyncTask<String, String, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         activity.showDialog(activity.DIALOG_DOWNLOAD);
+
     }
 
     @Override
     protected String doInBackground(String... aurl) {
+
         if (audio.listPart.size() == 1) {
             downloadOnePart();
         } else {
             downloadTwoPart();
         }
+
         return null;
 
     }
@@ -132,5 +143,30 @@ public class DownloadAudio extends AsyncTask<String, String, String> {
         DataSource.addAudio(audio);
         activity.makeNotification("Tải về thành công !");
         activity.dismissDialog(activity.DIALOG_DOWNLOAD);
+        ServiceManager.getServerInstance().updateDownload(audio.idAudio).enqueue(callBackDownload);
     }
+
+    public Callback<ResponseBody> callBackDownload = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            try {
+                String responseString = response.body().string();
+                SimpleResponse simpleResponse = new SimpleResponse(responseString);
+                if (simpleResponse.success > 0) {
+                    if (listener != null)
+                        listener.onFinishDownload(audio.downloadCount + 1);
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+        }
+    };
+
 }

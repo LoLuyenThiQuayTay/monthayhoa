@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
 import hecosodulieudaphuongtien.demonhom19.ui.MainActivity;
+import hecosodulieudaphuongtien.demonhom19.webservice.ServiceManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by admin on 3/29/2016.
@@ -54,12 +59,26 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
             listPlayer.add(playerPart);
         }
         audioPlaying.updatePartPercent();
+//caii nay k can truyen len nhi truyen len idAudio ? uh
+        ServiceManager.getServerInstance().updateView(audioPlaying.idAudio).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
     }
 
     public boolean isIsPlaying() {
         return listPlayer.get(audioPlaying.partPlaying).player.isPlaying();
     }
 
+    //an loz r
     public void playOffline(Audio audio) {
 
 //        if (viewPlayer.getVisibility() != View.VISIBLE) {
@@ -177,8 +196,8 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
             listPlayer.get(audioPlaying.partPlaying).onPause();
             audioPlaying.partPlaying = currentPartPosition;
             listPlayer.get(currentPartPosition).onResume();
-        }
-        Log.e("AA", "seekTo: currentPartPosition " + currentPartPosition + " ---" + currentPositionAudioToCurrentPositionPart(percent));
+        }// hoa vua doi cai gi ma 2 -1 thanh 1-2 day la ham sap xep part theo cai part position luc dau co nghe dc khong
+        Log.e("AA", "seekTo: currentPartPosition " + currentPartPosition + "  -  " + audioPlaying.partPlaying);
         listPlayer.get(currentPartPosition).player.seekTo(currentPositionAudioToCurrentPositionPart(percent));
 
     }

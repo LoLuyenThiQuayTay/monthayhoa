@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,10 +21,12 @@ import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.adapter.AudioAdapter;
+import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
-import hecosodulieudaphuongtien.demonhom19.model.AudioResponse;
+import hecosodulieudaphuongtien.demonhom19.model.AudioOfSingerResponse;
 import hecosodulieudaphuongtien.demonhom19.model.Singer;
 import hecosodulieudaphuongtien.demonhom19.model.Utils;
+import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
 import hecosodulieudaphuongtien.demonhom19.webservice.ServiceManager;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -46,6 +49,7 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
     private AudioAdapter adapter;
     private Singer singer;
     private Toolbar toolbar;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public DetailSingerFragment(Singer singer) {
         this.singer = singer;
@@ -61,6 +65,9 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail_singer, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setColorSchemeColors(R.color.colorAccent, R.color.colorPrimary);
         ivAvatar = (ImageView) rootView.findViewById(R.id.ivAvatar);
         tvProFile = (TextView) rootView.findViewById(R.id.tvProfile);
         recyclerAudio = (RecyclerView) rootView.findViewById(R.id.listAudio);
@@ -80,7 +87,6 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
         recyclerAudio.setAdapter(adapter);
         tvProFile.setText(singer.profile);
         Glide.with(this).load(singer.urlAvatar).into(ivAvatar);
-
         return rootView;
     }
 
@@ -91,7 +97,14 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
 
     @Override
     public void onClickItem(Audio audio) {
+        MyPlayer.getInstance().playOnline(audio);
+        activity.replaceFragment(new PlayerFragment(MyPlayer.getAudioPlaying()));
+    }
 
+    @Override
+    public void onClickSubItem(Audio audio) {
+        DownloadAudio downloadAudio = new DownloadAudio(activity,audio,null);
+        downloadAudio.execute();
     }
 
     @Override
@@ -101,15 +114,17 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
     }
 
     private void loadAudio() {
+        swipeRefreshLayout.setRefreshing(true);
         ServiceManager.getServerInstance().searchAudioByIDSinger(singer.id).enqueue(this);
     }
 
     @Override
     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        swipeRefreshLayout.setRefreshing(false);
         try {
             String responseString = response.body().string();
-            AudioResponse audioResponse = new AudioResponse(responseString);
-            adapter.updateData(audioResponse.listAudio);
+            AudioOfSingerResponse audioResponse = new AudioOfSingerResponse(responseString);
+            adapter.updateData(audioResponse.listAudios);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,6 +132,8 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
 
     @Override
     public void onFailure(Call<ResponseBody> call, Throwable t) {
+        swipeRefreshLayout.setRefreshing(false);
+
 
     }
 }
