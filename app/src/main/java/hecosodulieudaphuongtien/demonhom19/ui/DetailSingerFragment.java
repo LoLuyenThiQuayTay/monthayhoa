@@ -6,11 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
     private GridLayoutManager manager;
     private AudioAdapter adapter;
     private Singer singer;
+    private Toolbar toolbar;
 
     public DetailSingerFragment(Singer singer) {
         this.singer = singer;
@@ -61,10 +65,21 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
         tvProFile = (TextView) rootView.findViewById(R.id.tvProfile);
         recyclerAudio = (RecyclerView) rootView.findViewById(R.id.listAudio);
         listAudios = new ArrayList<>();
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        toolbar.setTitle(singer.name);
+        toolbar.setNavigationIcon(R.drawable.icon_back_white);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.onBackPressed();
+            }
+        });
         manager = new GridLayoutManager(getContext(), 1);
         recyclerAudio.setLayoutManager(manager);
         adapter = new AudioAdapter(getContext(), this);
         recyclerAudio.setAdapter(adapter);
+        tvProFile.setText(singer.profile);
+        Glide.with(this).load(singer.urlAvatar).into(ivAvatar);
 
         return rootView;
     }
@@ -75,7 +90,7 @@ public class DetailSingerFragment extends Fragment implements AudioAdapter.OnCli
     }
 
     @Override
-    public void onClickItem(int position) {
+    public void onClickItem(Audio audio) {
 
     }
 

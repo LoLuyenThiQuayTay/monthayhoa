@@ -14,6 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -25,6 +29,7 @@ import org.w3c.dom.Text;
 import hecosodulieudaphuongtien.demonhom19.R;
 import hecosodulieudaphuongtien.demonhom19.mediaplayer.MyPlayer;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
 
 /**
  * Created by admin on 10/30/2016.
@@ -37,7 +42,11 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     public Audio audioPlaying;
     private MainActivity activity;
     private Handler mHandler;
-    private TextView currentTime, totalTime;
+    private TextView currentTime, totalTime, tvViewCoung, tvRate, tvSingerName, btnDiscard, btnOK;
+    private LinearLayout contentCount;
+    private RelativeLayout background;
+    private RatingBar ratingBar;
+    private ProgressBar progressBar;
 
     public PlayerFragment(Audio audioPlaying) {
         this.audioPlaying = audioPlaying;
@@ -56,18 +65,28 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         View rootView = inflater.inflate(R.layout.fragment_player_detail, container, false);
         init(rootView);
         updateSeekBar();
+        activity.btn.setVisibility(View.GONE);
         return rootView;
     }
 
     private void init(View rootView) {
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progress);
+        background = (RelativeLayout) rootView.findViewById(R.id.backgroundRate);
+        ratingBar = (RatingBar) rootView.findViewById(R.id.ratingBar);
+        contentCount = (LinearLayout) rootView.findViewById(R.id.countContent);
+        tvRate = (TextView) rootView.findViewById(R.id.tvRateCount);
+        tvViewCoung = (TextView) rootView.findViewById(R.id.tvViewCount);
         currentTime = (TextView) rootView.findViewById(R.id.tvCurrent);
         totalTime = (TextView) rootView.findViewById(R.id.tvTotal);
         btnPlay = (ImageView) rootView.findViewById(R.id.play);
         btnRate = (ImageView) rootView.findViewById(R.id.rate);
+        btnOK = (TextView) rootView.findViewById(R.id.btnOK);
+        btnDiscard = (TextView) rootView.findViewById(R.id.btnDiscard);
         btnDownload = (ImageView) rootView.findViewById(R.id.download);
         ivAvatar = (ImageView) rootView.findViewById(R.id.iv_avatar);
         seekBar = (SeekBar) rootView.findViewById(R.id.seekbar);
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        tvSingerName = (TextView) rootView.findViewById(R.id.tvSingerName);
         toolbar.setTitle(audioPlaying.title);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         toolbar.setNavigationIcon(R.drawable.close);
@@ -81,11 +100,25 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         btnPlay.setOnClickListener(this);
         btnRate.setOnClickListener(this);
         btnDownload.setOnClickListener(this);
+        if (audioPlaying.listPart.get(0).url == null) {
+            btnDownload.setVisibility(View.GONE);
+        } else {
+            btnDownload.setVisibility(View.VISIBLE);
+
+        }
+        tvSingerName.setText("Singer: " + audioPlaying.singer.name);
+        if (audioPlaying.listPart.get(0).url == null) {
+            contentCount.setVisibility(View.GONE);
+        } else {
+            contentCount.setVisibility(View.VISIBLE);
+            tvViewCoung.setText(" " + audioPlaying.viewCount);
+            tvRate.setText(" " + audioPlaying.rate);
+        }
 
         if (MyPlayer.getInstance().isIsPlaying()) {
-            btnPlay.setImageResource(R.drawable.play_circle_detail);
-        } else {
             btnPlay.setImageResource(R.drawable.pause_detail);
+        } else {
+            btnPlay.setImageResource(R.drawable.play_circle_detail);
         }
         Glide.with(this).load(audioPlaying.singer.urlAvatar).asBitmap().centerCrop().into(new BitmapImageViewTarget(ivAvatar) {
             @Override
@@ -98,6 +131,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         });
         totalTime.setText(getStringTime(audioPlaying.getAudioLength()));
         seekBar.setOnSeekBarChangeListener(this);
+        background.setOnClickListener(this);
+        btnDiscard.setOnClickListener(this);
+        btnOK.setOnClickListener(this);
     }
 
     public void updateSeekBar() {
@@ -119,8 +155,21 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
                 }
                 break;
             case R.id.rate:
+                background.setVisibility(View.VISIBLE);
                 break;
             case R.id.download:
+                DownloadAudio downloadAudio = new DownloadAudio(activity, audioPlaying);
+                downloadAudio.execute();
+                break;
+            case R.id.backgroundRate:
+                background.setVisibility(View.GONE);
+                break;
+            case R.id.btnDiscard:
+                background.setVisibility(View.GONE);
+                break;
+            case R.id.btnOK:
+                float rate = ratingBar.getRating();
+                progressBar.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -145,7 +194,11 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     private Runnable mUpdateTimeTask = new Runnable() {
 
         public void run() {
-
+            if (MyPlayer.getInstance().isIsPlaying()) {
+                btnPlay.setImageResource(R.drawable.pause_detail);
+            } else {
+                btnPlay.setImageResource(R.drawable.play_circle_detail);
+            }
             int totalDuration = MyPlayer.getInstance().getDuration();
             int currentDuration = MyPlayer.getInstance().getCurrentPosition();
             currentTime.setText(getStringTime(currentDuration));
@@ -163,6 +216,12 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         long totalSeconds = (int) (totalDuration / 1000);
         percentage = (((double) currentSeconds) / totalSeconds) * 100;
         return percentage.intValue();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        activity.btn.setVisibility(View.VISIBLE);
     }
 
     private String getStringTime(int duration) {

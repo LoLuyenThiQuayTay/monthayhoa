@@ -45,6 +45,7 @@ public class PlayerPart implements MediaPlayer.OnPreparedListener, MediaPlayer.O
         try {
             player.setDataSource(context, uri);
             player.setOnPreparedListener(this);
+            player.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }

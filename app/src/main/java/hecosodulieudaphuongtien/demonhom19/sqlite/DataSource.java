@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
+import hecosodulieudaphuongtien.demonhom19.model.Singer;
 
 /**
  * Created by admin on 3/25/2016.
@@ -32,7 +33,14 @@ public class DataSource {
             Audio audio = new Audio();
             audio.idAudio = cursor.getInt(0);
             audio.title = cursor.getString(1);
-            audio.rawUrl = cursor.getString(2);
+
+            audio.listPart = new ArrayList<>();
+            Audio.AudioPart part = new Audio.AudioPart();
+            part.positionPart = 1;
+            part.lengthString = cursor.getString(2);
+            audio.listPart.add(part);
+            Singer singer = new Singer(cursor.getString(3));
+            audio.singer = singer;
             audio.number = num;
             num++;
             listAudio.add(audio);
@@ -47,7 +55,8 @@ public class DataSource {
         ContentValues insertValues = new ContentValues();
         insertValues.put("title", audio.title);
         insertValues.put("id", audio.idAudio);
-        insertValues.put("url", audio.rawUrl);
+        insertValues.put("length", audio.getStringTime(audio.getAudioLength()));
+        insertValues.put("singerName", audio.singer.name);
         sqLiteDatabase.insert("audio", null, insertValues);
 
     }

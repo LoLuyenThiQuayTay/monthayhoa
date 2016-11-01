@@ -40,7 +40,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_audio, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_audio_online, viewGroup, false);
         ViewHolder viewHolder = new ViewHolder(v);
         return viewHolder;
     }
@@ -53,7 +53,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onClickItem(position);
+                listener.onClickItem(audio);
             }
         });
         holder.tvArtis.setText(audio.singer.name);
@@ -63,6 +63,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
             holder.line.setVisibility(View.VISIBLE);
         }
         holder.btnDownload.setVisibility(View.VISIBLE);
+        holder.tvViewCount.setText(" " + audio.viewCount);
+        holder.tvRateCount.setText(" " + audio.rate);
     }
 
     public ArrayList<Audio> getListData() {
@@ -77,7 +79,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout btnDownload;
-        public TextView tvName, tvNumber, tvArtis;
+        public TextView tvName, tvNumber, tvArtis, tvViewCount, tvRateCount;
         public RelativeLayout item, line;
 
         public ViewHolder(View itemView) {
@@ -88,11 +90,13 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.ViewHolder> 
             btnDownload = (LinearLayout) itemView.findViewById(R.id.btn_sub_item);
             tvName = (TextView) itemView.findViewById(R.id.tv_title);
             line = (RelativeLayout) itemView.findViewById(R.id.line);
+            tvViewCount = (TextView) itemView.findViewById(R.id.tvViewCount);
+            tvRateCount = (TextView) itemView.findViewById(R.id.tvRateCount);
         }
 
     }
 
     public interface OnClickItemRecyclerView {
-        public void onClickItem(int position);
+        public void onClickItem(Audio audio);
     }
 }

@@ -25,6 +25,9 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
     private MyPlayer() {
     }
 
+    public static Audio getAudioPlaying() {
+        return audioPlaying;
+    }
 
     public static void initIfNeed(MainActivity mactivity) {
         activity = mactivity;
@@ -57,16 +60,18 @@ public class MyPlayer implements View.OnClickListener, OnCompletedPart {
         return listPlayer.get(audioPlaying.partPlaying).player.isPlaying();
     }
 
-    public void playOffline(String title) {
+    public void playOffline(Audio audio) {
 
 //        if (viewPlayer.getVisibility() != View.VISIBLE) {
 //            viewPlayer.setVisibility(View.VISIBLE);
 //        }
         listPlayer = new ArrayList<>();
+        audioPlaying = audio;
         audioPlaying.partPlaying = 0;
-        PlayerPart playerPart = new PlayerPart(title, activity, this);
+        PlayerPart playerPart = new PlayerPart(audio.title, activity, this);
         listPlayer.add(playerPart);
 
+        audioPlaying.updatePartPercent();
     }
 
     public void seekForward() {

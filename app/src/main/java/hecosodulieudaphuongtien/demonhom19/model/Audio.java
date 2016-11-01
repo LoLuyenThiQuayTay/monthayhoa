@@ -197,4 +197,31 @@ public class Audio {
 
         return currentDuration * 1000;
     }
+
+    public String getStringTime(int duration) {
+        String newTime;
+        long totalSec = duration / 1000;
+        long minute = totalSec / 60;
+        long sec = totalSec % 60;
+        if (minute > 100) return ("--:--");
+        if (minute < 10) {
+            if (sec < 10) {
+                newTime = "0" + minute + ":0" + sec;
+                return newTime;
+            } else {
+                newTime = "0" + minute + ":" + sec;
+                return newTime;
+            }
+        } else {
+            if (sec < 10) {
+                newTime = minute + ":0" + sec;
+                return newTime;
+            } else {
+                newTime = minute + ":" + sec;
+                return newTime;
+            }
+        }
+
+
+    }
 }

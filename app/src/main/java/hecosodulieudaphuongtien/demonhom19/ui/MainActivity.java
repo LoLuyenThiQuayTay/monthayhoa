@@ -2,12 +2,16 @@ package hecosodulieudaphuongtien.demonhom19.ui;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.sql.SQLException;
 
@@ -19,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public int DIALOG_DOWNLOAD = 1011;
     public ProgressDialog progressDialog;
     public int FRAGMENT_CONTENT = R.id.fragment_content;
-
+    public FloatingActionButton btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        btn = (FloatingActionButton) findViewById(R.id.btn_player);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replaceFragmentUp(new PlayerFragment(MyPlayer.getAudioPlaying()));
+            }
+        });
         addFragmentContent(new HomeFragment());
 
     }
@@ -77,4 +88,11 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(btn.getWindowToken(), 0);
+
+    }
 }

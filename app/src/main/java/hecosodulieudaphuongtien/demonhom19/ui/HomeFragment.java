@@ -20,6 +20,7 @@ import hecosodulieudaphuongtien.demonhom19.mediaplayer.PlayerPart;
 import hecosodulieudaphuongtien.demonhom19.model.Audio;
 import hecosodulieudaphuongtien.demonhom19.model.Singer;
 import hecosodulieudaphuongtien.demonhom19.sqlite.DataSource;
+import hecosodulieudaphuongtien.demonhom19.sqlite.DownloadAudio;
 
 /**
  * Created by admin on 3/24/2016.
@@ -58,15 +59,8 @@ public class HomeFragment extends Fragment implements AudioDownloadedAdapter.OnC
                 activity.replaceFragmentUp(new SearchFragment());
             }
         });
-        ArrayList<Audio> listAudio = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            Audio audio = new Audio();
-            audio.title = "Fallin'";
-            audio.singer = new Singer("Alicia Keys");
-            listAudio.add(audio);
-        }
 
-        adapter.updateData(listAudio);
+        adapter.updateData(DataSource.getAudiosDownloaded());
         return rootView;
     }
 
@@ -87,19 +81,23 @@ public class HomeFragment extends Fragment implements AudioDownloadedAdapter.OnC
 
     @Override
     public void onClickItem(int position) {
-        Audio audio = new Audio();
-        audio.title = "Test";
-        ArrayList<Audio.AudioPart> listURL = new ArrayList<>();
-        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/1.mp3", "00:11"));
+        MyPlayer.getInstance().playOffline(adapter.getListData().get(position));
+        activity.replaceFragmentUp(new PlayerFragment(MyPlayer.getInstance().getAudioPlaying()));
 
-        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/2.mp3", "00:08"));
-        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/1.mp3", "00:11"));
+//        Audio audio = new Audio();
+//        audio.title = "Chuyện của mùa đông";
+//        ArrayList<Audio.AudioPart> listURL = new ArrayList<>();
+//        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/chuyen%20cua%20mua%20dong%20part1.mp3", "02:10"));
+//
+//        listURL.add(new Audio.AudioPart(1, "http://api.taplifeapp.com:6969/Uploads/chuyen%20cua%20mua%20dong%20part2.mp3", "03:45"));
+//
+//        audio.listPart = listURL;
+//        audio.singer = new Singer("Hà Anh Tuấn");
+//        DownloadAudio downloadAudio = new DownloadAudio((MainActivity) getActivity(), audio);
+//        downloadAudio.execute();
 
-
-        audio.listPart = listURL;
-        audio.singer = new Singer("AliciaKeys");
-        MyPlayer.getInstance().playOnline(audio);
-        activity.replaceFragmentUp(new PlayerFragment(audio));
+//        MyPlayer.getInstance().playOnline(audio);
+//        activity.replaceFragmentUp(new PlayerFragment(audio));
 
 //        player = new MediaPlayer();
 //        player.reset();
